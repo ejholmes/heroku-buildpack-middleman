@@ -8,7 +8,7 @@ class LanguagePack::Ruby < LanguagePack::Base
   BUILDPACK_VERSION   = "v46"
   LIBYAML_VERSION     = "0.1.4"
   LIBYAML_PATH        = "libyaml-#{LIBYAML_VERSION}"
-  BUNDLER_VERSION     = "1.3.0.pre.2"
+  BUNDLER_VERSION     = "1.3.5"
   BUNDLER_GEM_PATH    = "bundler-#{BUNDLER_VERSION}"
   NODE_VERSION        = "0.4.7"
   NODE_JS_BINARY_PATH = "node-#{NODE_VERSION}"
@@ -52,6 +52,7 @@ class LanguagePack::Ruby < LanguagePack::Base
     install_ruby
     install_jvm
     setup_language_pack_environment
+    export_env_dir
     setup_profiled
     allow_git do
       install_language_pack_gems
@@ -629,7 +630,7 @@ params = CGI.parse(uri.query || "")
 
   def generate_middleman_site
     puts "Building middleman site"
-    pipe("env PATH=$PATH bundle exec middleman build")
+    pipe("env PATH=$PATH bundle exec middleman build --verbose")
     unless $? == 0
       error "Failed to generate site with middleman."
     end

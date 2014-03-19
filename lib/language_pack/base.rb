@@ -9,14 +9,16 @@ Encoding.default_external = Encoding::UTF_8 if defined?(Encoding)
 class LanguagePack::Base
   VENDOR_URL = "https://s3.amazonaws.com/heroku-buildpack-ruby"
 
-  attr_reader :build_path, :cache_path
+  attr_reader :build_path, :cache_path, :env_path
 
   # changes directory to the build_path
   # @param [String] the path of the build dir
   # @param [String] the path of the cache dir
-  def initialize(build_path, cache_path=nil)
+  # @param [String] the path of the env dir
+  def initialize(build_path, cache_path=nil, env_path=nil)
     @build_path = build_path
     @cache_path = cache_path
+    @env_path   = env_path
     @id = Digest::SHA1.hexdigest("#{Time.now.to_f}-#{rand(1000000)}")[0..10]
 
     Dir.chdir build_path
@@ -227,5 +229,13 @@ private ##################################
   def cache_exists?(path)
     File.exists?(cache_base + path)
   end
-end
 
+  # Export all the environment variables
+  # from the ENV_DIR given by Heroku.
+  def export_env_dir
+    Dir.foreach(env_path) do |item|
+      next if item == '.' or item == '..'
+      ENV["#{item}"] = File.read("#{env_path}/#{item}")
+    end
+  end
+end
