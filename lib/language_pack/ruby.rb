@@ -52,6 +52,7 @@ class LanguagePack::Ruby < LanguagePack::Base
     install_ruby
     install_jvm
     setup_language_pack_environment
+    export_env_dir
     setup_profiled
     allow_git do
       install_language_pack_gems
